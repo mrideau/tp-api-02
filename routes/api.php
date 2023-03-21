@@ -4,6 +4,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,7 +22,19 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::apiResource('categories', CategoryController::class);
-Route::apiResource('products', ProductController::class);
-Route::apiResource('orders', OrderController::class);
-Route::apiResource('customers', CustomerController::class);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+});
+
+/**
+ * Middleware for API Authentication
+ */
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('orders', OrderController::class);
+    Route::apiResource('customers', CustomerController::class);
+});
